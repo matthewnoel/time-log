@@ -10,10 +10,17 @@
 	<link rel="canonical" href="https://matthewnoel.github.io/time-tracker/" />
 	<link rel="manifest" href="timetracker.webmanifest" />
 	<script defer src='./build/bundle.js'></script>
-	<script src="app.js" defer></script>
 </head>
 
 <body>
+	<script>
+		if (navigator.serviceWorker) {
+			navigator.serviceWorker.register(
+				'/time-tracker/sw.js',
+				{ scope: '/time-tracker/' }
+			)
+		}
+	</script>
 </body>
 
 </html>
