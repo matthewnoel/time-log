@@ -19,6 +19,7 @@
             return;
         }
         window.localStorage.setItem(key, value);
+        value = '';
         updateCurrentData();
     };
     const formatLogTimeCell = (key) => {
