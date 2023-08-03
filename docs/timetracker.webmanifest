@@ -14,6 +14,7 @@
         "type": "image/png"
       }
     ],
+    "scope": "/time-tracker/",
     "start_url": "/",
     "display": "minimal-ui",
     "theme_color": "#ffffff",
