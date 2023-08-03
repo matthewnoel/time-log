@@ -7,12 +7,21 @@
 	<title>Time Tracker</title>
 	<link rel='stylesheet' href='global.css'>
 	<link rel='stylesheet' href='build/bundle.css'>
-	<link rel="manifest" href="timetracker.webmanifest" />
+	<link rel="canonical" href="https://matthewnoel.github.io/time-tracker/" />
+	<link rel="manifest" href="/time-tracker/docs/manifest.webmanifest">
 	<script defer src='./build/bundle.js'></script>
 	<script src="app.js" defer></script>
 </head>
 
 <body>
+	<script>
+		if (navigator.serviceWorker) {
+			navigator.serviceWorker.register(
+				'/time-tracker/docs/sw.js',
+				{ scope: '/time-tracker/docs/' }
+			)
+		}
+	</script>
 </body>
 
 </html>
