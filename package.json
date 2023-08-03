@@ -1,0 +1,42 @@
+{
+  "name": "time-tracker",
+  "version": "1.0.0",
+  "description": "A bare-bones local time tracking web page",
+  "scripts": {
+    "build": "rollup -c",
+    "clean": "git restore root/build/*",
+    "dev": "rollup -c -w",
+    "start": "sirv root --no-clear",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/matthewnoel/time-tracker.git"
+  },
+  "keywords": [
+    "productivity"
+  ],
+  "author": "Matthew Noel",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/matthewnoel/time-tracker/issues"
+  },
+  "homepage": "https://github.com/matthewnoel/time-tracker#readme",
+  "dependencies": {
+    "sirv-cli": "^2.0.0"
+  },
+  "devDependencies": {
+    "@rollup/plugin-commonjs": "^17.0.0",
+    "@rollup/plugin-json": "^6.0.0",
+    "@rollup/plugin-node-resolve": "^11.0.0",
+    "@rollup/plugin-terser": "^0.4.3",
+    "@zerodevx/svelte-toast": "^0.9.5",
+    "rollup": "^2.3.4",
+    "rollup-plugin-css-only": "^3.1.0",
+    "rollup-plugin-livereload": "^2.0.0",
+    "rollup-plugin-polyfill-node": "^0.12.0",
+    "rollup-plugin-string": "^3.0.0",
+    "rollup-plugin-svelte": "^7.0.0",
+    "svelte": "^3.0.0"
+  }
+}
