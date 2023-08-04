@@ -7,6 +7,10 @@ td {
 	border: 1px solid black;
 }
 
+td, th {
+	padding: 0.25rem;
+}
+
 thead,
 tfoot {
 	background-color: black;

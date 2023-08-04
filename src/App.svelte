@@ -75,35 +75,63 @@
 </script>
 
 <SvelteToast />
-<form action="" on:submit|preventDefault={handleActivityFormSubmit}>
-    <input
-        type="text"
-        bind:value
-        name="Activity"
-        id="activity"
-        use:useEventListeners
-    />
-    <input type="submit" disabled={!value} value="Log Time" />
-</form>
-<table>
-    <thead>
-        <tr>
-            <th colspan="1">Log Time</th>
-            <th colspan="1">Duration</th>
-            <th colspan="1">Activity</th>
-        </tr>
-    </thead>
-    <tbody>
-        {#each entries as { key, value }, i}
+<h1>Time Tracker</h1>
+<div class="form-wrapper">
+    <form action="" on:submit|preventDefault={handleActivityFormSubmit}>
+        <div>
+            <label for="activity">Activity:</label>
+            <input
+                type="text"
+                bind:value
+                name="Activity"
+                id="activity"
+                use:useEventListeners
+            />
+        </div>
+        <input type="submit" disabled={!value} value="Log Time" />
+    </form>
+</div>
+{#if entries.length > 1}
+    <h2>Latest Log</h2>
+    <table>
+        <thead>
             <tr>
-                <td>{formatLogTimeCell(key)}</td>
-                <td>{formatDurationCell(key, entries[i - 1]?.key)}</td>
-                <td>{value}</td>
+                <th colspan="1">Log Time</th>
+                <th colspan="1">Duration</th>
+                <th colspan="1">Activity</th>
             </tr>
-        {/each}
-    </tbody>
-</table>
-<input type="button" value="New Day" on:click={handleNewDayClick} />
+        </thead>
+        <tbody>
+            <tr>
+                <td>{formatLogTimeCell(entries[entries.length - 1].key)}</td>
+                <td>{formatDurationCell(entries[entries.length - 1].key, entries[entries.length - 2].key)}</td>
+                <td>{entries[entries.length - 1].value}</td>
+            </tr>
+        </tbody>
+    </table>
+{/if}
+{#if entries.length > 0}
+    <h2>Full Summary</h2>
+    <table>
+        <thead>
+            <tr>
+                <th colspan="1">Log Time</th>
+                <th colspan="1">Duration</th>
+                <th colspan="1">Activity</th>
+            </tr>
+        </thead>
+        <tbody>
+            {#each entries as { key, value }, i}
+                <tr>
+                    <td>{formatLogTimeCell(key)}</td>
+                    <td>{formatDurationCell(key, entries[i - 1]?.key)}</td>
+                    <td>{value}</td>
+                </tr>
+            {/each}
+        </tbody>
+    </table>
+    <input type="button" value="New Day" on:click={handleNewDayClick} />
+{/if}
 {#if !isActivityInputInFocus}
     <input
         class="floating"
@@ -114,12 +142,25 @@
 {/if}
 
 <style>
-    input {
+    h1, h2 {
+        text-align: center;
+        margin: 0.5rem 0 0.25rem 0;
+    }
+    input[type=button] {
         display: block;
+        margin: 0.5rem auto;
+    }
+    input[type=submit] {
         margin: 0.5rem auto;
     }
     table {
         margin: auto;
+    }
+    form {
+        display: inline-block;
+    }
+    .form-wrapper {
+        text-align: center;
     }
     .floating {
         position: fixed;
