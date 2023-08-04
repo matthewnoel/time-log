@@ -4,7 +4,7 @@
     const MILLISECONDS_TO_MINUTES_MAGIC_NUMBER = 60000;
 
     const getDataFromStorage = () => Object.assign({}, window.localStorage);
-    const updateCurrentData = () => currentData = getDataFromStorage();
+    const updateCurrentData = () => (currentData = getDataFromStorage());
     const handleNewDayClick = () => {
         window.localStorage.clear();
         updateCurrentData();
@@ -19,8 +19,13 @@
             return;
         }
         window.localStorage.setItem(key, value);
-        value = '';
+        value = "";
         updateCurrentData();
+    };
+    const handleGoToInputClick = () => {
+        const matches = document.querySelectorAll("input[type=text]");
+        if (matches.length < 1) return;
+        matches[0].focus();
     };
     const formatLogTimeCell = (key) => {
         const reconstructed = new Date(
@@ -28,19 +33,47 @@
         );
         const hours = reconstructed.getHours();
         const minutes = reconstructed.getMinutes();
-        const padding = (`${minutes}`.length === 1) ? 0 : '';
+        const padding = `${minutes}`.length === 1 ? 0 : "";
         return `${hours}:${padding}${minutes}`;
     };
-    const formatDurationCell = (current, previous) => (previous == null) ? 'N/A' : `${current - previous} min`;
+    const formatDurationCell = (current, previous) =>
+        previous == null ? "N/A" : `${current - previous} min`;
+    const useEventListeners = (node) => {
+        const handleFocus = (event) => {
+            isActivityInputInFocus = true;
+            node && typeof node.select === "function" && node.select();
+        };
+        const handleBlur = (event) => {
+            isActivityInputInFocus = false;
+        };
+        node.addEventListener("focus", handleFocus);
+        node.addEventListener("blur", handleBlur);
+        return {
+            destroy() {
+                node.removeEventListener("focus", handleFocus);
+                node.removeEventListener("blur", handleBlur);
+            },
+        };
+    };
 
     let value;
+    let isActivityInputInFocus;
     let currentData = getDataFromStorage();
-    $: entries = Object.entries(currentData).map((e) => ({ key: e[0], value: e[1] }));
+    $: entries = Object.entries(currentData).map((e) => ({
+        key: e[0],
+        value: e[1],
+    }));
 </script>
 
 <SvelteToast />
 <form action="" on:submit|preventDefault={handleActivityFormSubmit}>
-    <input type="text" bind:value name="Activity" id="activity" />
+    <input
+        type="text"
+        bind:value
+        name="Activity"
+        id="activity"
+        use:useEventListeners
+    />
     <input type="submit" disabled={!value} value="Log Time" />
 </form>
 <table>
@@ -62,6 +95,14 @@
     </tbody>
 </table>
 <input type="button" value="New Day" on:click={handleNewDayClick} />
+{#if !isActivityInputInFocus}
+    <input
+        class="floating"
+        type="button"
+        value="🖋️"
+        on:click={handleGoToInputClick}
+    />
+{/if}
 
 <style>
     input {
@@ -70,5 +111,11 @@
     }
     table {
         margin: auto;
+    }
+    .floating {
+        position: fixed;
+        bottom: 1rem;
+        right: 1rem;
+        font-size: 2em;
     }
 </style>
