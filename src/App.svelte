@@ -18,6 +18,13 @@
             toast.push(`Cannot update twice per-minute.`);
             return;
         }
+        const previousNormalizedValue = entries[entries.length - 1]?.value
+            ?.toLowerCase()
+            .trim();
+        const normalizedValue = value.toLowerCase().trim();
+        if (previousNormalizedValue == normalizedValue) {
+            window.localStorage.removeItem(entries[entries.length - 1].key);
+        }
         window.localStorage.setItem(key, value);
         value = "";
         updateCurrentData();
@@ -59,10 +66,12 @@
     let value;
     let isActivityInputInFocus;
     let currentData = getDataFromStorage();
-    $: entries = Object.entries(currentData).map((e) => ({
-        key: e[0],
-        value: e[1],
-    }));
+    $: entries = Object.entries(currentData)
+        .map((e) => ({
+            key: e[0],
+            value: e[1],
+        }))
+        .sort((a, b) => a.key - b.key);
 </script>
 
 <SvelteToast />
