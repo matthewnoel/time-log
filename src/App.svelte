@@ -144,7 +144,6 @@
 <style>
     h1, h2 {
         text-align: center;
-        margin: 0.5rem 0 0.25rem 0;
     }
     input[type=button] {
         display: block;
