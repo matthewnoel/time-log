@@ -79,7 +79,8 @@
 <div class="form-wrapper">
     <form action="" on:submit|preventDefault={handleActivityFormSubmit}>
         <div>
-            <label for="activity">Activity:</label>
+            <label for="activity">&nbsp;Activity:</label>
+            <br>
             <input
                 type="text"
                 bind:value
@@ -152,11 +153,25 @@
     input[type=submit] {
         margin: 0.5rem auto;
     }
+    input[type=text] {
+        display: block;
+        margin: auto;
+        width: 95%;
+    }
     table {
         margin: auto;
     }
     form {
         display: inline-block;
+        padding: 0;
+        border: 1px solid black;
+        border-radius: 3px;
+        width: 100%;
+        max-width: 20rem;
+    }
+    form > div {
+        text-align: left;
+        padding: 0.5rem;
     }
     .form-wrapper {
         text-align: center;
