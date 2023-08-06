@@ -141,6 +141,7 @@
         on:click={handleGoToInputClick}
     />
 {/if}
+<a href="https://raw.githubusercontent.com/matthewnoel/CO2T4/main/third-party-licenses.txt" target="_blank">Third-Party Licenses</a>
 
 <style>
     h1, h2 {
@@ -172,6 +173,11 @@
     form > div {
         text-align: left;
         padding: 0.5rem;
+    }
+    a {
+        text-align: center;
+        display: block;
+        margin: 2rem 0 1rem 0;
     }
     .form-wrapper {
         text-align: center;
