@@ -7,7 +7,8 @@
     "clean": "git restore docs/build/*",
     "dev": "rollup -c -w",
     "start": "sirv docs --no-clear",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "licenses": "npx generate-license-file --input package.json --output third-party-licenses.txt --overwrite"
   },
   "repository": {
     "type": "git",
@@ -31,6 +32,7 @@
     "@rollup/plugin-node-resolve": "^11.0.0",
     "@rollup/plugin-terser": "^0.4.3",
     "@zerodevx/svelte-toast": "^0.9.5",
+    "generate-license-file": "^2.0.0",
     "rollup": "^2.3.4",
     "rollup-plugin-css-only": "^3.1.0",
     "rollup-plugin-livereload": "^2.0.0",
