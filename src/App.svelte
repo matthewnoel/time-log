@@ -141,7 +141,10 @@
         on:click={handleGoToInputClick}
     />
 {/if}
-<a href="https://raw.githubusercontent.com/matthewnoel/CO2T4/main/third-party-licenses.txt" target="_blank">Third-Party Licenses</a>
+<footer>
+    <a href="https://github.com/matthewnoel/time-tracker" target="_blank">The Code</a>
+    <a href="https://raw.githubusercontent.com/matthewnoel/time-tracker/main/third-party-licenses.txt" target="_blank">Third-Party Licenses</a>
+</footer>
 
 <style>
     h1, h2 {
@@ -177,6 +180,8 @@
     a {
         text-align: center;
         display: block;
+    }
+    footer {
         margin: 2rem 0 1rem 0;
     }
     .form-wrapper {
