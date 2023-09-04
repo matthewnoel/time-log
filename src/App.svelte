@@ -2,8 +2,6 @@
     import { SvelteToast, toast } from "@zerodevx/svelte-toast";
 
     const MILLISECONDS_TO_MINUTES_MAGIC_NUMBER = 60000;
-    const SUBMIT_ID = 'SUBMIT';
-    const IBID_ID = 'IBID';
 
     const getDataFromStorage = () => Object.assign({}, window.localStorage);
     const updateCurrentData = () => (currentData = getDataFromStorage());
@@ -12,7 +10,7 @@
         updateCurrentData();
         toast.push(`Cleared yesterday's activities!`);
     };
-    const handleActivityFormSubmit = (e) => {
+    const handleActivityFormSubmit = () => {
         const key = `${Math.floor(
             Date.now() / MILLISECONDS_TO_MINUTES_MAGIC_NUMBER
         )}`;
@@ -20,16 +18,14 @@
             toast.push(`Cannot update twice per-minute.`);
             return;
         }
-        const previousValue = entries[entries.length - 1]?.value;
-        const previousNormalizedValue = previousValue
+        const previousNormalizedValue = entries[entries.length - 1]?.value
             ?.toLowerCase()
             .trim();
-        const normalizedValue = value?.toLowerCase().trim();
-        if (previousNormalizedValue == normalizedValue || (previousValue != null && e.submitter.id === IBID_ID)) {
+        const normalizedValue = value.toLowerCase().trim();
+        if (previousNormalizedValue == normalizedValue) {
             window.localStorage.removeItem(entries[entries.length - 1].key);
         }
-        const newValue = (e.submitter.id === IBID_ID) ? previousValue : value;
-        window.localStorage.setItem(key, newValue);
+        window.localStorage.setItem(key, value);
         value = "";
         updateCurrentData();
     };
@@ -93,10 +89,7 @@
                 use:useEventListeners
             />
         </div>
-        {#if entries.length > 1}
-            <input id={IBID_ID} type="submit" value="Ibid" />
-        {/if}
-        <input id={SUBMIT_ID} type="submit" disabled={!value} value="Log Time" />
+        <input type="submit" disabled={!value} value="Log Time" />
     </form>
 </div>
 {#if entries.length > 1}
