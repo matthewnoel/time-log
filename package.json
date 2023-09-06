@@ -6,6 +6,7 @@
     "build": "rollup -c",
     "clean": "git restore docs/build/*",
     "dev": "rollup -c -w",
+    "host": "sirv docs --host",
     "start": "sirv docs --no-clear",
     "test": "echo \"Error: no test specified\" && exit 1",
     "licenses": "npx generate-license-file --input package.json --output third-party-licenses.txt --overwrite"
