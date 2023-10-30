@@ -75,7 +75,7 @@
 </script>
 
 <SvelteToast />
-<h1>Time Tracker</h1>
+<h1>Time Log</h1>
 <div class="form-wrapper">
     <form action="" on:submit|preventDefault={handleActivityFormSubmit}>
         <div>
@@ -142,8 +142,8 @@
     />
 {/if}
 <footer>
-    <a href="https://github.com/matthewnoel/time-tracker" target="_blank">The Code</a>
-    <a href="https://raw.githubusercontent.com/matthewnoel/time-tracker/main/third-party-licenses.txt" target="_blank">Third-Party Licenses</a>
+    <a href="https://github.com/matthewnoel/time-log" target="_blank">The Code</a>
+    <a href="https://raw.githubusercontent.com/matthewnoel/time-log/main/third-party-licenses.txt" target="_blank">Third-Party Licenses</a>
 </footer>
 
 <style>

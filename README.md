@@ -1,4 +1,4 @@
-# time-tracker
+# time-log
 A bare-bones local time tracking web page
 
-[Demo](https://matthewnoel.github.io/time-tracker/)
+[Demo](https://matthewnoel.github.io/time-log/)
