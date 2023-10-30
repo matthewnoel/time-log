@@ -1,5 +1,5 @@
 {
-  "name": "time-tracker",
+  "name": "time-log",
   "version": "1.0.0",
   "description": "A bare-bones local time tracking web page",
   "scripts": {
@@ -13,7 +13,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/matthewnoel/time-tracker.git"
+    "url": "git+https://github.com/matthewnoel/time-log.git"
   },
   "keywords": [
     "productivity"
@@ -21,9 +21,9 @@
   "author": "Matthew Noel",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/matthewnoel/time-tracker/issues"
+    "url": "https://github.com/matthewnoel/time-log/issues"
   },
-  "homepage": "https://github.com/matthewnoel/time-tracker#readme",
+  "homepage": "https://github.com/matthewnoel/time-log#readme",
   "dependencies": {
     "sirv-cli": "^2.0.0"
   },
