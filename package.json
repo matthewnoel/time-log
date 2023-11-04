@@ -1,6 +1,7 @@
 {
   "name": "time-log",
   "version": "1.0.0",
+  "type": "module",
   "description": "A bare-bones local time tracking web page",
   "scripts": {
     "build": "rollup -c",
@@ -34,10 +35,9 @@
     "@rollup/plugin-terser": "^0.4.3",
     "@zerodevx/svelte-toast": "^0.9.5",
     "generate-license-file": "^2.0.0",
-    "rollup": "^2.3.4",
-    "rollup-plugin-css-only": "^4.4.0",
+    "rollup": "^4.3.0",
+    "rollup-plugin-css-only": "^4.5.0",
     "rollup-plugin-livereload": "^2.0.0",
-    "rollup-plugin-polyfill-node": "^0.12.0",
     "rollup-plugin-string": "^3.0.0",
     "rollup-plugin-svelte": "^7.0.0",
     "svelte": "^4.2.2"
