@@ -40,6 +40,6 @@
     "rollup-plugin-livereload": "^2.0.0",
     "rollup-plugin-string": "^3.0.0",
     "rollup-plugin-svelte": "^7.0.0",
-    "svelte": "^4.2.7"
+    "svelte": "^4.2.8"
   }
 }
