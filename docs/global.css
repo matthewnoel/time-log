@@ -1,9 +1,25 @@
+[data-theme="light"] {
+	--color-bg: #ffffff;
+	--color-fg: #000000;
+}
+
+[data-theme="dark"] {
+	--color-bg: #000000;
+	--color-fg: #ffffff;
+}
+
+body {
+	background-color: var(--color-bg);
+	color: var(--color-fg);
+}
+
 table,
 td {
 	border: 1px solid black;
 }
 
-td, th {
+td,
+th {
 	padding: 0.25rem;
 }
 

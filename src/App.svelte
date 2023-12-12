@@ -1,18 +1,25 @@
 <script>
     import { SvelteToast, toast } from "@zerodevx/svelte-toast";
+    import ThemeToggle from "./components/ThemeToggle.svelte";
 
     const MILLISECONDS_TO_MINUTES_MAGIC_NUMBER = 60000;
 
-    const getDataFromStorage = () => Object.assign({}, window.localStorage);
+    const getDataFromStorage = () => {
+        const storage = Object.assign({}, window.localStorage);
+        delete storage.theme;
+        return storage;
+    };
     const updateCurrentData = () => (currentData = getDataFromStorage());
     const handleNewDayClick = () => {
+        const theme = window.localStorage.getItem("theme");
         window.localStorage.clear();
+        window.localStorage.setItem("theme", theme);
         updateCurrentData();
         toast.push(`Cleared yesterday's activities!`);
     };
     const handleActivityFormSubmit = () => {
         const key = `${Math.floor(
-            Date.now() / MILLISECONDS_TO_MINUTES_MAGIC_NUMBER
+            Date.now() / MILLISECONDS_TO_MINUTES_MAGIC_NUMBER,
         )}`;
         if (window.localStorage.getItem(key) != null) {
             toast.push(`Cannot update twice per-minute.`);
@@ -36,7 +43,7 @@
     };
     const formatLogTimeCell = (key) => {
         const reconstructed = new Date(
-            key * MILLISECONDS_TO_MINUTES_MAGIC_NUMBER
+            key * MILLISECONDS_TO_MINUTES_MAGIC_NUMBER,
         );
         const hours = reconstructed.getHours();
         const minutes = reconstructed.getMinutes();
@@ -80,7 +87,7 @@
     <form action="" on:submit|preventDefault={handleActivityFormSubmit}>
         <div>
             <label for="activity">&nbsp;Activity:</label>
-            <br>
+            <br />
             <input
                 type="text"
                 bind:value
@@ -105,7 +112,12 @@
         <tbody>
             <tr>
                 <td>{formatLogTimeCell(entries[entries.length - 1].key)}</td>
-                <td>{formatDurationCell(entries[entries.length - 1].key, entries[entries.length - 2].key)}</td>
+                <td
+                    >{formatDurationCell(
+                        entries[entries.length - 1].key,
+                        entries[entries.length - 2].key,
+                    )}</td
+                >
                 <td>{entries[entries.length - 1].value}</td>
             </tr>
         </tbody>
@@ -141,23 +153,32 @@
         on:click={handleGoToInputClick}
     />
 {/if}
+<div id="theme-wrapper">
+    <ThemeToggle />
+</div>
 <footer>
-    <a href="https://github.com/matthewnoel/time-log" target="_blank">The Code</a>
-    <a href="https://raw.githubusercontent.com/matthewnoel/time-log/main/third-party-licenses.txt" target="_blank">Third-Party Licenses</a>
+    <a href="https://github.com/matthewnoel/time-log" target="_blank"
+        >The Code</a
+    >
+    <a
+        href="https://raw.githubusercontent.com/matthewnoel/time-log/main/third-party-licenses.txt"
+        target="_blank">Third-Party Licenses</a
+    >
 </footer>
 
 <style>
-    h1, h2 {
+    h1,
+    h2 {
         text-align: center;
     }
-    input[type=button] {
+    input[type="button"] {
         display: block;
         margin: 0.5rem auto;
     }
-    input[type=submit] {
+    input[type="submit"] {
         margin: 0.5rem auto;
     }
-    input[type=text] {
+    input[type="text"] {
         display: block;
         margin: auto;
         width: 95%;
@@ -192,5 +213,10 @@
         bottom: 1rem;
         right: 1rem;
         font-size: 2em;
+    }
+    #theme-wrapper {
+        position: fixed;
+        top: 1rem;
+        right: 1rem;
     }
 </style>
