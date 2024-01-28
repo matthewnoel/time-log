@@ -47,7 +47,7 @@
         );
         const hours = reconstructed.getHours();
         const minutes = reconstructed.getMinutes();
-        const padding = `${minutes}`.length === 1 ? 0 : "";
+        const padding = `${minutes}`.length === 1 ? 0 : '';
         return `${hours}:${padding}${minutes}`;
     };
     const formatDurationCell = (current, previous) =>
