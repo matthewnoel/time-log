@@ -1,12 +1,13 @@
-<script>
-    const getTheme = ({ localStorageTheme, systemSettingDark }) => {
+<script lang="ts">
+    // ts-ignore
+    const getTheme = ({ localStorageTheme: string = localStorageTheme, systemSettingDark: MediaQueryList = systemSettingDark }) => {
         if (localStorageTheme !== null) return localStorageTheme;
         if (systemSettingDark.matches) return dark;
         return light;
     };
-    const update = (theme) => {
+    const update = (theme: string) => {
         value = theme === dark ? "🌞" : "🌚";
-        document.querySelector("html").setAttribute("data-theme", theme);
+        (document.querySelector("html") as HTMLElement).setAttribute("data-theme", theme);
     };
     const handleClick = () => {
         const newTheme = currentThemeSetting === dark ? light : dark;
@@ -16,7 +17,7 @@
     };
     const light = "light";
     const dark = "dark";
-    const localStorageTheme = localStorage.getItem("theme");
+    const localStorageTheme = localStorage.getItem("theme") ?? '';
     const systemSettingDark = window.matchMedia("(prefers-color-scheme: dark)");
     let currentThemeSetting = getTheme({
         localStorageTheme,

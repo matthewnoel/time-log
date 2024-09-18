@@ -30,14 +30,17 @@
     "@rollup/plugin-json": "^6.1.0",
     "@rollup/plugin-node-resolve": "^15.2.3",
     "@rollup/plugin-terser": "^0.4.3",
+    "@rollup/plugin-typescript": "^11.1.6",
+    "@tsconfig/svelte": "^5.0.4",
     "@zerodevx/svelte-toast": "^0.9.5",
     "generate-license-file": "^3.5.1",
-    "rollup": "^4.21.3", 
+    "rollup": "^4.21.3",
     "rollup-plugin-css-only": "^4.5.2",
     "rollup-plugin-livereload": "^2.0.0",
     "rollup-plugin-string": "^3.0.0",
     "rollup-plugin-svelte": "^7.2.2",
     "sirv-cli": "^2.0.2",
-    "svelte": "^4.2.19" 
+    "svelte": "^4.2.19",
+    "svelte-preprocess": "^6.0.2"
   }
 }

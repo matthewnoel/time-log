@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
     import { SvelteToast, toast } from "@zerodevx/svelte-toast";
     import ThemeToggle from "./components/ThemeToggle.svelte";
 
@@ -11,7 +11,7 @@
     };
     const updateCurrentData = () => (currentData = getDataFromStorage());
     const handleNewDayClick = () => {
-        const theme = window.localStorage.getItem("theme");
+        const theme = window.localStorage.getItem("theme") ?? '';
         window.localStorage.clear();
         window.localStorage.setItem("theme", theme);
         updateCurrentData();
@@ -39,9 +39,9 @@
     const handleGoToInputClick = () => {
         const matches = document.querySelectorAll("input[type=text]");
         if (matches.length < 1) return;
-        matches[0].focus();
+        (matches[0] as HTMLElement).focus();
     };
-    const formatLogTimeCell = (key) => {
+    const formatLogTimeCell = (key: number) => {
         const reconstructed = new Date(
             key * MILLISECONDS_TO_MINUTES_MAGIC_NUMBER,
         );
@@ -50,14 +50,14 @@
         const padding = `${minutes}`.length === 1 ? 0 : '';
         return `${hours}:${padding}${minutes}`;
     };
-    const formatDurationCell = (current, previous) =>
+    const formatDurationCell = (current: number, previous: number) =>
         previous == null ? "N/A" : `${current - previous} min`;
-    const useEventListeners = (node) => {
-        const handleFocus = (event) => {
+    const useEventListeners = (node: any) => {
+        const handleFocus = () => {
             isActivityInputInFocus = true;
             node && typeof node.select === "function" && node.select();
         };
-        const handleBlur = (event) => {
+        const handleBlur = () => {
             isActivityInputInFocus = false;
         };
         node.addEventListener("focus", handleFocus);
@@ -70,15 +70,15 @@
         };
     };
 
-    let value;
-    let isActivityInputInFocus;
+    let value: string;
+    let isActivityInputInFocus: boolean;
     let currentData = getDataFromStorage();
     $: entries = Object.entries(currentData)
         .map((e) => ({
             key: e[0],
             value: e[1],
         }))
-        .sort((a, b) => a.key - b.key);
+        .sort((a, b) => Number(a.key) - Number(b.key));
 </script>
 
 <SvelteToast />
