@@ -11,11 +11,12 @@
 body {
 	background-color: var(--color-bg);
 	color: var(--color-fg);
+	border-color: var(--color-bg);
 }
 
 table,
 td {
-	border: 1px solid black;
+	border: 1px solid var(--color-fg);
 }
 
 td,
@@ -25,6 +26,6 @@ th {
 
 thead,
 tfoot {
-	background-color: black;
-	color: white;
+	background-color: var(--color-fg);
+	color: var(--color-bg);
 }
