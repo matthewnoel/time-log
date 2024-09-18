@@ -189,7 +189,7 @@
     form {
         display: inline-block;
         padding: 0;
-        border: 1px solid black;
+        border: 1px solid var(--color-fg);
         border-radius: 3px;
         width: 100%;
         max-width: 20rem;
@@ -216,7 +216,7 @@
     }
     #theme-wrapper {
         position: fixed;
-        top: 1rem;
-        right: 1rem;
+        bottom: 1rem;
+        left: 1rem;
     }
 </style>
