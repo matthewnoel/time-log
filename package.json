@@ -32,7 +32,7 @@
     "@rollup/plugin-terser": "^0.4.3",
     "@rollup/plugin-typescript": "^11.1.6",
     "@tsconfig/svelte": "^5.0.4",
-    "@zerodevx/svelte-toast": "^0.9.5",
+    "@zerodevx/svelte-toast": "^0.9.6",
     "generate-license-file": "^3.5.1",
     "rollup": "^4.22.0",
     "rollup-plugin-css-only": "^4.5.2",
