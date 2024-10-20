@@ -30,7 +30,7 @@
     "@rollup/plugin-json": "^6.1.0",
     "@rollup/plugin-node-resolve": "^15.3.0",
     "@rollup/plugin-terser": "^0.4.3",
-    "@rollup/plugin-typescript": "^12.1.0",
+    "@rollup/plugin-typescript": "^12.1.1",
     "@tsconfig/svelte": "^5.0.4",
     "@zerodevx/svelte-toast": "^0.9.6",
     "generate-license-file": "^3.5.1",
