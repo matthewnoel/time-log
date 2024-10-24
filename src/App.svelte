@@ -1,4 +1,6 @@
 <script lang="ts">
+    import { preventDefault } from 'svelte/legacy';
+
     import { SvelteToast, toast } from "@zerodevx/svelte-toast";
     import ThemeToggle from "./components/ThemeToggle.svelte";
 
@@ -70,21 +72,21 @@
         };
     };
 
-    let value: string;
-    let isActivityInputInFocus: boolean;
-    let currentData = getDataFromStorage();
-    $: entries = Object.entries(currentData)
+    let value: string = $state();
+    let isActivityInputInFocus: boolean = $state();
+    let currentData = $state(getDataFromStorage());
+    let entries = $derived(Object.entries(currentData)
         .map((e) => ({
             key: e[0],
             value: e[1],
         }))
-        .sort((a, b) => Number(a.key) - Number(b.key));
+        .sort((a, b) => Number(a.key) - Number(b.key)));
 </script>
 
 <SvelteToast />
 <h1>Time Log</h1>
 <div class="form-wrapper">
-    <form action="" on:submit|preventDefault={handleActivityFormSubmit}>
+    <form action="" onsubmit={preventDefault(handleActivityFormSubmit)}>
         <div>
             <label for="activity">&nbsp;Activity:</label>
             <br />
@@ -143,14 +145,14 @@
             {/each}
         </tbody>
     </table>
-    <input type="button" value="New Day" on:click={handleNewDayClick} />
+    <input type="button" value="New Day" onclick={handleNewDayClick} />
 {/if}
 {#if !isActivityInputInFocus}
     <input
         class="floating"
         type="button"
         value="🖋️"
-        on:click={handleGoToInputClick}
+        onclick={handleGoToInputClick}
     />
 {/if}
 <div id="theme-wrapper">
