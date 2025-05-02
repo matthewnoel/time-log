@@ -34,7 +34,7 @@
     "@tsconfig/svelte": "^5.0.4",
     "@zerodevx/svelte-toast": "^0.9.6",
     "generate-license-file": "^4.0.0",
-    "rollup": "^4.40.0",
+    "rollup": "^4.40.1",
     "rollup-plugin-css-only": "^4.5.2",
     "rollup-plugin-livereload": "^2.0.0",
     "rollup-plugin-string": "^3.0.0",
