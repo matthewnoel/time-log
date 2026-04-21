@@ -3,36 +3,37 @@
 
     import { SvelteToast, toast } from "@zerodevx/svelte-toast";
     import ThemeToggle from "./components/ThemeToggle.svelte";
+    import {
+        formatDurationCell,
+        formatLogTimeCell,
+        minuteKeyFromTimestamp,
+        normalizeActivity,
+        toSortedEntries,
+    } from "./lib/time";
+    import {
+        clearActivityDataPreservingTheme,
+        getActivityData,
+    } from "./lib/storage";
 
-    const MILLISECONDS_TO_MINUTES_MAGIC_NUMBER = 60000;
-
-    const getDataFromStorage = () => {
-        const storage = Object.assign({}, window.localStorage);
-        delete storage.theme;
-        return storage;
-    };
-    const updateCurrentData = () => (currentData = getDataFromStorage());
+    const updateCurrentData = () => (currentData = getActivityData());
     const handleNewDayClick = () => {
-        const theme = window.localStorage.getItem("theme") ?? '';
-        window.localStorage.clear();
-        window.localStorage.setItem("theme", theme);
+        clearActivityDataPreservingTheme();
         updateCurrentData();
         toast.push(`Cleared yesterday's activities!`);
     };
     const handleActivityFormSubmit = () => {
-        const key = `${Math.floor(
-            Date.now() / MILLISECONDS_TO_MINUTES_MAGIC_NUMBER,
-        )}`;
+        const key = minuteKeyFromTimestamp(Date.now());
         if (window.localStorage.getItem(key) != null) {
             toast.push(`Cannot update twice per-minute.`);
             return;
         }
-        const previousNormalizedValue = entries[entries.length - 1]?.value
-            ?.toLowerCase()
-            .trim();
-        const normalizedValue = value.toLowerCase().trim();
-        if (previousNormalizedValue == normalizedValue) {
-            window.localStorage.removeItem(entries[entries.length - 1].key);
+        const previous = entries[entries.length - 1];
+        if (
+            previous != null &&
+            normalizeActivity(previous.value as string) ===
+                normalizeActivity(value)
+        ) {
+            window.localStorage.removeItem(previous.key);
         }
         window.localStorage.setItem(key, value);
         value = "";
@@ -43,17 +44,6 @@
         if (matches.length < 1) return;
         (matches[0] as HTMLElement).focus();
     };
-    const formatLogTimeCell = (key: number) => {
-        const reconstructed = new Date(
-            key * MILLISECONDS_TO_MINUTES_MAGIC_NUMBER,
-        );
-        const hours = reconstructed.getHours();
-        const minutes = reconstructed.getMinutes();
-        const padding = `${minutes}`.length === 1 ? 0 : '';
-        return `${hours}:${padding}${minutes}`;
-    };
-    const formatDurationCell = (current: number, previous: number) =>
-        previous == null ? "N/A" : `${current - previous} min`;
     const useEventListeners = (node: any) => {
         const handleFocus = () => {
             isActivityInputInFocus = true;
@@ -74,13 +64,8 @@
 
     let value: string = $state();
     let isActivityInputInFocus: boolean = $state();
-    let currentData = $state(getDataFromStorage());
-    let entries = $derived(Object.entries(currentData)
-        .map((e) => ({
-            key: e[0],
-            value: e[1],
-        }))
-        .sort((a, b) => Number(a.key) - Number(b.key)));
+    let currentData = $state(getActivityData());
+    let entries = $derived(toSortedEntries(currentData));
 </script>
 
 <SvelteToast />
