@@ -1,6 +1,4 @@
 <script lang="ts">
-    import { preventDefault } from 'svelte/legacy';
-
     import { SvelteToast, toast } from "@zerodevx/svelte-toast";
     import ThemeToggle from "./components/ThemeToggle.svelte";
     import {
@@ -15,82 +13,79 @@
         getActivityData,
     } from "./lib/storage";
 
-    const updateCurrentData = () => (currentData = getActivityData());
+    let value = $state("");
+    let isActivityInputInFocus = $state(false);
+    let currentData = $state(getActivityData());
+    let activityInput: HTMLInputElement | null = $state(null);
+
+    const entries = $derived(toSortedEntries(currentData));
+    const latest = $derived(entries[entries.length - 1]);
+    const previous = $derived(entries[entries.length - 2]);
+
+    const refresh = () => (currentData = getActivityData());
+
     const handleNewDayClick = () => {
         clearActivityDataPreservingTheme();
-        updateCurrentData();
-        toast.push(`Cleared yesterday's activities!`);
+        refresh();
+        toast.push("Cleared yesterday's activities!");
     };
-    const handleActivityFormSubmit = () => {
+
+    const handleActivityFormSubmit = (event: SubmitEvent) => {
+        event.preventDefault();
         const key = minuteKeyFromTimestamp(Date.now());
         if (window.localStorage.getItem(key) != null) {
-            toast.push(`Cannot update twice per-minute.`);
+            toast.push("Cannot update twice per-minute.");
             return;
         }
-        if (!value?.trim()) {
-            toast.push(`Activity cannot be empty.`);
+        if (!value.trim()) {
+            toast.push("Activity cannot be empty.");
             return;
         }
-        const previous = entries[entries.length - 1];
         if (
-            previous != null &&
-            normalizeActivity(previous.value as string) ===
+            latest != null &&
+            normalizeActivity(latest.value as string) ===
                 normalizeActivity(value)
         ) {
-            window.localStorage.removeItem(previous.key);
+            window.localStorage.removeItem(latest.key);
         }
         window.localStorage.setItem(key, value);
         value = "";
-        updateCurrentData();
-    };
-    const handleGoToInputClick = () => {
-        const matches = document.querySelectorAll("input[type=text]");
-        if (matches.length < 1) return;
-        (matches[0] as HTMLElement).focus();
-    };
-    const useEventListeners = (node: any) => {
-        const handleFocus = () => {
-            isActivityInputInFocus = true;
-            node && typeof node.select === "function" && node.select();
-        };
-        const handleBlur = () => {
-            isActivityInputInFocus = false;
-        };
-        node.addEventListener("focus", handleFocus);
-        node.addEventListener("blur", handleBlur);
-        return {
-            destroy() {
-                node.removeEventListener("focus", handleFocus);
-                node.removeEventListener("blur", handleBlur);
-            },
-        };
+        refresh();
     };
 
-    let value: string = $state();
-    let isActivityInputInFocus: boolean = $state();
-    let currentData = $state(getActivityData());
-    let entries = $derived(toSortedEntries(currentData));
+    const handleGoToInputClick = () => activityInput?.focus();
+
+    const handleActivityFocus = (event: FocusEvent) => {
+        isActivityInputInFocus = true;
+        (event.currentTarget as HTMLInputElement).select();
+    };
+
+    const handleActivityBlur = () => {
+        isActivityInputInFocus = false;
+    };
 </script>
 
 <SvelteToast />
 <h1>Time Log</h1>
 <div class="form-wrapper">
-    <form action="" onsubmit={preventDefault(handleActivityFormSubmit)}>
+    <form onsubmit={handleActivityFormSubmit}>
         <div>
             <label for="activity">&nbsp;Activity:</label>
             <br />
             <input
                 type="text"
                 bind:value
+                bind:this={activityInput}
                 name="Activity"
                 id="activity"
-                use:useEventListeners
+                onfocus={handleActivityFocus}
+                onblur={handleActivityBlur}
             />
         </div>
-        <input type="submit" disabled={!value?.trim()} value="Log Time" />
+        <input type="submit" disabled={!value.trim()} value="Log Time" />
     </form>
 </div>
-{#if entries.length > 1}
+{#if entries.length > 1 && latest && previous}
     <h2>Latest Log</h2>
     <table>
         <thead>
@@ -102,14 +97,9 @@
         </thead>
         <tbody>
             <tr>
-                <td>{formatLogTimeCell(entries[entries.length - 1].key)}</td>
-                <td
-                    >{formatDurationCell(
-                        entries[entries.length - 1].key,
-                        entries[entries.length - 2].key,
-                    )}</td
-                >
-                <td>{entries[entries.length - 1].value}</td>
+                <td>{formatLogTimeCell(latest.key)}</td>
+                <td>{formatDurationCell(latest.key, previous.key)}</td>
+                <td>{latest.value}</td>
             </tr>
         </tbody>
     </table>
@@ -125,11 +115,11 @@
             </tr>
         </thead>
         <tbody>
-            {#each entries as { key, value }, i}
+            {#each entries as entry, i (entry.key)}
                 <tr>
-                    <td>{formatLogTimeCell(key)}</td>
-                    <td>{formatDurationCell(key, entries[i - 1]?.key)}</td>
-                    <td>{value}</td>
+                    <td>{formatLogTimeCell(entry.key)}</td>
+                    <td>{formatDurationCell(entry.key, entries[i - 1]?.key)}</td>
+                    <td>{entry.value}</td>
                 </tr>
             {/each}
         </tbody>
