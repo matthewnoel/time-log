@@ -30,27 +30,36 @@
         toast.push("Cleared yesterday's activities!");
     };
 
-    const handleActivityFormSubmit = (event: SubmitEvent) => {
-        event.preventDefault();
+    const submitActivity = (activityValue: string): boolean => {
         const key = minuteKeyFromTimestamp(Date.now());
         if (window.localStorage.getItem(key) != null) {
             toast.push("Cannot update twice per-minute.");
-            return;
+            return false;
         }
-        if (!value.trim()) {
+        if (!activityValue.trim()) {
             toast.push("Activity cannot be empty.");
-            return;
+            return false;
         }
         if (
             latest != null &&
             normalizeActivity(latest.value as string) ===
-                normalizeActivity(value)
+                normalizeActivity(activityValue)
         ) {
             window.localStorage.removeItem(latest.key);
         }
-        window.localStorage.setItem(key, value);
-        value = "";
+        window.localStorage.setItem(key, activityValue);
         refresh();
+        return true;
+    };
+
+    const handleActivityFormSubmit = (event: SubmitEvent) => {
+        event.preventDefault();
+        if (submitActivity(value)) value = "";
+    };
+
+    const handleIbidClick = () => {
+        if (latest == null) return;
+        submitActivity(latest.value as string);
     };
 
     const handleGoToInputClick = () => activityInput?.focus();
@@ -82,7 +91,17 @@
                 onblur={handleActivityBlur}
             />
         </div>
-        <input type="submit" disabled={!value.trim()} value="Log Time" />
+        <div class="button-row">
+            {#if latest != null}
+                <input
+                    type="button"
+                    value="Ibid"
+                    aria-label={`Repeat last activity: ${latest.value}`}
+                    onclick={handleIbidClick}
+                />
+            {/if}
+            <input type="submit" disabled={!value.trim()} value="Log Time" />
+        </div>
     </form>
 </div>
 {#if entries.length > 1 && latest && previous}
@@ -188,6 +207,17 @@
     }
     .form-wrapper {
         text-align: center;
+    }
+    .button-row {
+        display: flex;
+        justify-content: center;
+        gap: 0.5rem;
+        margin: 0.5rem 0;
+    }
+    .button-row input[type="button"],
+    .button-row input[type="submit"] {
+        display: inline-block;
+        margin: 0;
     }
     .floating {
         position: fixed;

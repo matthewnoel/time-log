@@ -126,6 +126,17 @@
     .form-wrapper.svelte-1n46o8q {
         text-align: center;
     }
+    .button-row.svelte-1n46o8q {
+        display: flex;
+        justify-content: center;
+        gap: 0.5rem;
+        margin: 0.5rem 0;
+    }
+    .button-row.svelte-1n46o8q input[type="button"]:where(.svelte-1n46o8q),
+    .button-row.svelte-1n46o8q input[type="submit"]:where(.svelte-1n46o8q) {
+        display: inline-block;
+        margin: 0;
+    }
     .floating.svelte-1n46o8q {
         position: fixed;
         bottom: 1rem;
