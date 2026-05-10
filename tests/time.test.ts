@@ -81,6 +81,34 @@ describe('formatDurationCell', () => {
         // Defensive: if entries somehow get out of order, we should still render.
         expect(formatDurationCell(100, 105)).toBe('-5 min');
     });
+
+    it('formats whole-hour durations without a minutes part', () => {
+        expect(formatDurationCell(60, 0)).toBe('1 hr');
+        expect(formatDurationCell(120, 0)).toBe('2 hr');
+    });
+
+    it('formats hour + minute durations', () => {
+        expect(formatDurationCell(65, 0)).toBe('1 hr 5 min');
+        expect(formatDurationCell(185, 0)).toBe('3 hr 5 min');
+    });
+
+    it('formats whole-day durations without hours or minutes', () => {
+        expect(formatDurationCell(1440, 0)).toBe('1 day');
+        expect(formatDurationCell(2880, 0)).toBe('2 day');
+    });
+
+    it('formats day + hour + minute durations', () => {
+        expect(formatDurationCell(1505, 0)).toBe('1 day 1 hr 5 min');
+    });
+
+    it('skips zero-valued intermediate units', () => {
+        expect(formatDurationCell(1445, 0)).toBe('1 day 5 min');
+        expect(formatDurationCell(1500, 0)).toBe('1 day 1 hr');
+    });
+
+    it('keeps the negative sign on multi-unit durations', () => {
+        expect(formatDurationCell(0, 1505)).toBe('-1 day 1 hr 5 min');
+    });
 });
 
 describe('toSortedEntries', () => {

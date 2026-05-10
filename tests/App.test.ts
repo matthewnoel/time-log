@@ -279,6 +279,93 @@ describe('App – floating pen button', () => {
     });
 });
 
+describe('App – Ibid button', () => {
+    it('is hidden when there are no entries', () => {
+        render(App);
+        expect(
+            screen.queryByRole('button', { name: /Repeat last activity/ }),
+        ).not.toBeInTheDocument();
+    });
+
+    it('is shown when at least one entry exists', () => {
+        seedEntries([{ minutesAgo: 5, value: 'golf' }]);
+        render(App);
+        expect(
+            screen.getByRole('button', {
+                name: 'Repeat last activity: golf',
+            }),
+        ).toBeInTheDocument();
+    });
+
+    it('resubmits the latest activity at the current minute, coalescing the previous entry', async () => {
+        const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime });
+        // Latest entry is 'golf' from 15 minutes ago.
+        seedEntries([{ minutesAgo: 15, value: 'golf' }]);
+        render(App);
+
+        await user.click(
+            screen.getByRole('button', { name: /Repeat last activity/ }),
+        );
+
+        // Previous 'golf' key removed (coalesced into the new one).
+        expect(window.localStorage.getItem(`${baseMinute - 15}`)).toBeNull();
+        // New entry written at the current minute with the same value.
+        expect(window.localStorage.getItem(`${baseMinute}`)).toBe('golf');
+    });
+
+    it('extends the duration of the latest activity (Ibid scenario)', async () => {
+        const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime });
+        // Original anchor 30 min before now; 'golf' submitted 15 min before now.
+        seedEntries([
+            { minutesAgo: 30, value: 'work' },
+            { minutesAgo: 15, value: 'golf' },
+        ]);
+        render(App);
+
+        // Pre-Ibid: latest 'golf' shows a 15 min duration.
+        const latestHeading = screen.getByRole('heading', { name: 'Latest Log' });
+        let latestRow = within(
+            latestHeading.nextElementSibling as HTMLTableElement,
+        ).getAllByRole('row')[1];
+        expect(within(latestRow).getAllByRole('cell')[1]).toHaveTextContent(
+            '15 min',
+        );
+
+        await user.click(
+            screen.getByRole('button', { name: /Repeat last activity/ }),
+        );
+
+        // After Ibid: the 'golf' entry has been moved to the current minute,
+        // so its duration is now measured against 'work' 30 min ago.
+        latestRow = within(
+            latestHeading.nextElementSibling as HTMLTableElement,
+        ).getAllByRole('row')[1];
+        const cells = within(latestRow).getAllByRole('cell');
+        expect(cells[0]).toHaveTextContent(formatLogTimeCell(baseMinute));
+        expect(cells[1]).toHaveTextContent('30 min');
+        expect(cells[2]).toHaveTextContent('golf');
+    });
+
+    it('refuses to act when the current minute already has an entry', async () => {
+        const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime });
+        seedEntries([
+            { minutesAgo: 10, value: 'standup' },
+            { key: baseMinute, value: 'golf' },
+        ]);
+        render(App);
+
+        await user.click(
+            screen.getByRole('button', { name: /Repeat last activity/ }),
+        );
+
+        // Nothing changed.
+        expect(window.localStorage.getItem(`${baseMinute - 10}`)).toBe(
+            'standup',
+        );
+        expect(window.localStorage.getItem(`${baseMinute}`)).toBe('golf');
+    });
+});
+
 describe('App – footer links', () => {
     it('exposes the source code and third-party licenses links', () => {
         render(App);
