@@ -27,6 +27,10 @@
             toast.push(`Cannot update twice per-minute.`);
             return;
         }
+        if (!value?.trim()) {
+            toast.push(`Activity cannot be empty.`);
+            return;
+        }
         const previous = entries[entries.length - 1];
         if (
             previous != null &&
@@ -83,7 +87,7 @@
                 use:useEventListeners
             />
         </div>
-        <input type="submit" disabled={!value} value="Log Time" />
+        <input type="submit" disabled={!value?.trim()} value="Log Time" />
     </form>
 </div>
 {#if entries.length > 1}
