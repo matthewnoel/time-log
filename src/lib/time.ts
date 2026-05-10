@@ -24,7 +24,17 @@ export const formatDurationCell = (
     if (previous == null) return 'N/A';
     const currentNumeric = typeof current === 'string' ? Number(current) : current;
     const previousNumeric = typeof previous === 'string' ? Number(previous) : previous;
-    return `${currentNumeric - previousNumeric} min`;
+    const diff = currentNumeric - previousNumeric;
+    const sign = diff < 0 ? '-' : '';
+    const abs = Math.abs(diff);
+    const days = Math.floor(abs / 1440);
+    const hours = Math.floor((abs % 1440) / 60);
+    const minutes = abs % 60;
+    const parts: string[] = [];
+    if (days > 0) parts.push(`${days} day`);
+    if (hours > 0) parts.push(`${hours} hr`);
+    if (minutes > 0 || parts.length === 0) parts.push(`${minutes} min`);
+    return `${sign}${parts.join(' ')}`;
 };
 
 export const toSortedEntries = (data: Record<string, unknown>): LogEntry[] =>
