@@ -1,6 +1,5 @@
 <script lang="ts">
     import { SvelteToast, toast } from "@zerodevx/svelte-toast";
-    import ThemeToggle from "./components/ThemeToggle.svelte";
     import {
         formatDurationCell,
         formatLogTimeCell,
@@ -9,9 +8,14 @@
         toSortedEntries,
     } from "./lib/time";
     import {
-        clearActivityDataPreservingTheme,
+        clearActivityData,
         getActivityData,
+        LEGACY_THEME_STORAGE_KEY,
     } from "./lib/storage";
+
+    // One-time cleanup of the key left behind by the removed dark-mode
+    // feature, before the initial getActivityData() read below.
+    window.localStorage.removeItem(LEGACY_THEME_STORAGE_KEY);
 
     let value = $state("");
     let isActivityInputInFocus = $state(false);
@@ -25,7 +29,7 @@
     const refresh = () => (currentData = getActivityData());
 
     const handleNewDayClick = () => {
-        clearActivityDataPreservingTheme();
+        clearActivityData();
         refresh();
         toast.push("Cleared yesterday's activities!");
     };
@@ -153,9 +157,6 @@
         onclick={handleGoToInputClick}
     />
 {/if}
-<div id="theme-wrapper">
-    <ThemeToggle />
-</div>
 <footer>
     <a href="https://github.com/matthewnoel/time-log" target="_blank"
         >The Code</a
@@ -224,10 +225,5 @@
         bottom: 1rem;
         right: 1rem;
         font-size: 2em;
-    }
-    #theme-wrapper {
-        position: fixed;
-        bottom: 1rem;
-        left: 1rem;
     }
 </style>

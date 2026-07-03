@@ -45,12 +45,10 @@ if (
 
 beforeEach(() => {
     window.localStorage.clear();
-    document.documentElement.removeAttribute('data-theme');
 });
 
 afterEach(() => {
     vi.useRealTimers();
     vi.restoreAllMocks();
     window.localStorage.clear();
-    document.documentElement.removeAttribute('data-theme');
 });

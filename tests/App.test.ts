@@ -3,7 +3,7 @@ import userEvent from '@testing-library/user-event';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import App from '../src/App.svelte';
 import { MILLISECONDS_PER_MINUTE, formatLogTimeCell } from '../src/lib/time';
-import { THEME_STORAGE_KEY } from '../src/lib/storage';
+import { LEGACY_THEME_STORAGE_KEY } from '../src/lib/storage';
 
 // Freeze time at a predictable minute so every test gets deterministic
 // formatted timestamps regardless of the real clock.
@@ -63,17 +63,21 @@ describe('App – initial rendering', () => {
         ).not.toBeInTheDocument();
     });
 
-    it('does not render the theme key as an activity', () => {
-        window.localStorage.setItem(THEME_STORAGE_KEY, 'dark');
+    it('does not render a legacy theme key as an activity and removes it on startup', () => {
+        window.localStorage.setItem(LEGACY_THEME_STORAGE_KEY, 'dark');
         seedEntries([{ minutesAgo: 10, value: 'coding' }]);
         render(App);
         // theme should never appear as a row value
         expect(screen.queryByText('dark')).not.toBeInTheDocument();
         expect(screen.getByText('coding')).toBeInTheDocument();
+        // and the stale key is cleaned up
+        expect(
+            window.localStorage.getItem(LEGACY_THEME_STORAGE_KEY),
+        ).toBeNull();
     });
 
-    it('ignores the theme key when deciding whether to show tables', () => {
-        window.localStorage.setItem(THEME_STORAGE_KEY, 'light');
+    it('ignores a legacy theme key when deciding whether to show tables', () => {
+        window.localStorage.setItem(LEGACY_THEME_STORAGE_KEY, 'light');
         render(App);
         expect(
             screen.queryByRole('heading', { name: 'Full Summary' }),
@@ -227,9 +231,8 @@ describe('App – logging new activities', () => {
 });
 
 describe('App – new day reset', () => {
-    it('clears activities but preserves the theme setting', async () => {
+    it('clears all activities', async () => {
         const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime });
-        window.localStorage.setItem(THEME_STORAGE_KEY, 'dark');
         seedEntries([
             { minutesAgo: 30, value: 'standup' },
             { minutesAgo: 10, value: 'coding' },
@@ -238,8 +241,7 @@ describe('App – new day reset', () => {
 
         await user.click(screen.getByRole('button', { name: 'New Day' }));
 
-        expect(window.localStorage.getItem(THEME_STORAGE_KEY)).toBe('dark');
-        expect(window.localStorage.length).toBe(1);
+        expect(window.localStorage.length).toBe(0);
         expect(
             screen.queryByRole('heading', { name: 'Full Summary' }),
         ).not.toBeInTheDocument();
