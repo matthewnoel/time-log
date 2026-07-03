@@ -172,17 +172,57 @@
     h2 {
         text-align: center;
     }
+    input[type="button"],
+    input[type="submit"] {
+        appearance: none;
+        font: inherit;
+        background-color: var(--color-bg);
+        color: var(--color-fg);
+        border: 1px solid var(--color-fg);
+        border-radius: 3px;
+        padding: 0.35rem 0.9rem;
+        cursor: pointer;
+    }
+    input[type="button"]:hover,
+    input[type="submit"]:hover:enabled,
+    input[type="button"]:active,
+    input[type="submit"]:active:enabled {
+        background-color: var(--color-fg);
+        color: var(--color-bg);
+    }
+    input[type="button"]:focus-visible,
+    input[type="submit"]:focus-visible,
+    input[type="text"]:focus-visible {
+        outline: 2px solid var(--color-fg);
+        outline-offset: 1px;
+    }
     input[type="button"] {
         display: block;
         margin: 0.5rem auto;
     }
     input[type="submit"] {
         margin: 0.5rem auto;
+        background-color: var(--color-fg);
+        color: var(--color-bg);
+    }
+    input[type="submit"]:disabled {
+        background-color: var(--color-bg);
+        color: #767676;
+        border-color: #767676;
+        cursor: default;
     }
     input[type="text"] {
+        appearance: none;
+        font: inherit;
         display: block;
         margin: auto;
         width: 95%;
+        box-sizing: border-box;
+        background-color: var(--color-bg);
+        color: var(--color-fg);
+        border: 1px solid var(--color-fg);
+        border-radius: 3px;
+        padding: 0.4rem 0.5rem;
     }
     table {
         margin: auto;
@@ -220,10 +260,17 @@
         display: inline-block;
         margin: 0;
     }
-    .floating {
+    input[type="button"].floating {
+        background-color: var(--color-fg);
         position: fixed;
         bottom: 1rem;
         right: 1rem;
         font-size: 2em;
+        width: 3.5rem;
+        height: 3.5rem;
+        padding: 0;
+        border-radius: 50%;
+        line-height: 1;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
     }
 </style>
