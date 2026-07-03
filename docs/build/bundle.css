@@ -89,17 +89,57 @@
     h2.svelte-1n46o8q {
         text-align: center;
     }
+    input[type="button"].svelte-1n46o8q,
+    input[type="submit"].svelte-1n46o8q {
+        appearance: none;
+        font: inherit;
+        background-color: var(--color-bg);
+        color: var(--color-fg);
+        border: 1px solid var(--color-fg);
+        border-radius: 3px;
+        padding: 0.35rem 0.9rem;
+        cursor: pointer;
+    }
+    input[type="button"].svelte-1n46o8q:hover,
+    input[type="submit"].svelte-1n46o8q:hover:enabled,
+    input[type="button"].svelte-1n46o8q:active,
+    input[type="submit"].svelte-1n46o8q:active:enabled {
+        background-color: var(--color-fg);
+        color: var(--color-bg);
+    }
+    input[type="button"].svelte-1n46o8q:focus-visible,
+    input[type="submit"].svelte-1n46o8q:focus-visible,
+    input[type="text"].svelte-1n46o8q:focus-visible {
+        outline: 2px solid var(--color-fg);
+        outline-offset: 1px;
+    }
     input[type="button"].svelte-1n46o8q {
         display: block;
         margin: 0.5rem auto;
     }
     input[type="submit"].svelte-1n46o8q {
         margin: 0.5rem auto;
+        background-color: var(--color-fg);
+        color: var(--color-bg);
+    }
+    input[type="submit"].svelte-1n46o8q:disabled {
+        background-color: var(--color-bg);
+        color: #767676;
+        border-color: #767676;
+        cursor: default;
     }
     input[type="text"].svelte-1n46o8q {
+        appearance: none;
+        font: inherit;
         display: block;
         margin: auto;
         width: 95%;
+        box-sizing: border-box;
+        background-color: var(--color-bg);
+        color: var(--color-fg);
+        border: 1px solid var(--color-fg);
+        border-radius: 3px;
+        padding: 0.4rem 0.5rem;
     }
     table.svelte-1n46o8q {
         margin: auto;
@@ -137,10 +177,17 @@
         display: inline-block;
         margin: 0;
     }
-    .floating.svelte-1n46o8q {
+    input[type="button"].floating.svelte-1n46o8q {
+        background-color: var(--color-fg);
         position: fixed;
         bottom: 1rem;
         right: 1rem;
         font-size: 2em;
+        width: 3.5rem;
+        height: 3.5rem;
+        padding: 0;
+        border-radius: 50%;
+        line-height: 1;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
     }
 
