@@ -205,10 +205,12 @@
         background-color: var(--color-fg);
         color: var(--color-bg);
     }
+    input[type="button"]:disabled,
     input[type="submit"]:disabled {
         background-color: var(--color-bg);
         color: #767676;
         border-color: #767676;
+        background-color: #dcdcdc;
         cursor: default;
     }
     input[type="text"] {
