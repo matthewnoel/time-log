@@ -78,7 +78,18 @@
     };
 </script>
 
-<SvelteToast />
+<SvelteToast
+    options={{
+        theme: {
+            "--toastBackground": "var(--color-bg)",
+            "--toastColor": "var(--color-fg)",
+            "--toastBorder": "1px solid var(--color-fg)",
+            "--toastBorderRadius": "3px",
+            "--toastBoxShadow": "0 2px 6px rgba(0, 0, 0, 0.3)",
+            "--toastBarBackground": "var(--color-fg)",
+        },
+    }}
+/>
 <h1>Time Log</h1>
 <div class="form-wrapper">
     <form onsubmit={handleActivityFormSubmit}>
