@@ -122,10 +122,12 @@
         background-color: var(--color-fg);
         color: var(--color-bg);
     }
+    input[type="button"].svelte-1n46o8q:disabled,
     input[type="submit"].svelte-1n46o8q:disabled {
         background-color: var(--color-bg);
         color: #767676;
         border-color: #767676;
+        background-color: #dcdcdc;
         cursor: default;
     }
     input[type="text"].svelte-1n46o8q {
