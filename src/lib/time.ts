@@ -44,3 +44,27 @@ export const toSortedEntries = (data: Record<string, unknown>): LogEntry[] =>
 
 export const normalizeActivity = (value: string | null | undefined): string =>
     (value ?? '').toLowerCase().trim();
+
+// "email, , code," -> ["email", "code"]
+export const splitActivityList = (value: string | null | undefined): string[] =>
+    (value ?? '')
+        .split(',')
+        .map((part) => part.trim())
+        .filter((part) => part.length > 0);
+
+// End-time keys for `count` activities evenly filling the span (start, end].
+// Returns null when the span cannot give every activity at least one whole
+// minute, since two activities can never share a minute key.
+export const splitSpanKeys = (
+    start: number,
+    end: number,
+    count: number,
+): number[] | null => {
+    const span = end - start;
+    if (count < 1 || span < count) return null;
+    const keys: number[] = [];
+    for (let i = 1; i <= count; i++) {
+        keys.push(start + Math.round((i * span) / count));
+    }
+    return keys;
+};
