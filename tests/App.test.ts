@@ -230,6 +230,152 @@ describe('App – logging new activities', () => {
     });
 });
 
+describe('App – comma-separated entries', () => {
+    it('splits the list evenly across the span since the previous entry', async () => {
+        const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime });
+        seedEntries([{ minutesAgo: 30, value: 'standup' }]);
+        render(App);
+
+        await user.type(
+            screen.getByLabelText(/Activity/),
+            'email, code, review',
+        );
+        await user.click(screen.getByRole('button', { name: 'Log Time' }));
+
+        expect(window.localStorage.getItem(`${baseMinute - 20}`)).toBe('email');
+        expect(window.localStorage.getItem(`${baseMinute - 10}`)).toBe('code');
+        expect(window.localStorage.getItem(`${baseMinute}`)).toBe('review');
+
+        const rows = getRows(getSummaryTable());
+        expect(rows).toHaveLength(4);
+        expect(within(rows[1]).getAllByRole('cell')[1]).toHaveTextContent(
+            '10 min',
+        );
+        expect(within(rows[3]).getAllByRole('cell')[2]).toHaveTextContent(
+            'review',
+        );
+    });
+
+    it('ignores blank segments from trailing and doubled commas', async () => {
+        const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime });
+        seedEntries([{ minutesAgo: 30, value: 'standup' }]);
+        render(App);
+
+        await user.type(screen.getByLabelText(/Activity/), 'email,, code,');
+        await user.click(screen.getByRole('button', { name: 'Log Time' }));
+
+        expect(window.localStorage.getItem(`${baseMinute - 15}`)).toBe('email');
+        expect(window.localStorage.getItem(`${baseMinute}`)).toBe('code');
+    });
+
+    it('merges consecutive duplicates, keeping their combined share', async () => {
+        const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime });
+        seedEntries([{ minutesAgo: 30, value: 'standup' }]);
+        render(App);
+
+        await user.type(
+            screen.getByLabelText(/Activity/),
+            'email, EMAIL, code',
+        );
+        await user.click(screen.getByRole('button', { name: 'Log Time' }));
+
+        // Only the last key of the 'email' run is written, so it keeps the
+        // full 20 minutes instead of producing two adjacent 'email' rows.
+        // As with the existing coalescing rule, the later spelling wins.
+        expect(window.localStorage.getItem(`${baseMinute - 20}`)).toBeNull();
+        expect(window.localStorage.getItem(`${baseMinute - 10}`)).toBe('EMAIL');
+        expect(window.localStorage.getItem(`${baseMinute}`)).toBe('code');
+
+        const rows = getRows(getSummaryTable());
+        expect(rows).toHaveLength(3);
+        expect(within(rows[1]).getAllByRole('cell')[1]).toHaveTextContent(
+            '20 min',
+        );
+    });
+
+    it('merges the first item into the previous entry when it matches', async () => {
+        const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime });
+        seedEntries([
+            { minutesAgo: 60, value: 'standup' },
+            { minutesAgo: 30, value: 'coding' },
+        ]);
+        render(App);
+
+        await user.type(screen.getByLabelText(/Activity/), 'CODING, email');
+        await user.click(screen.getByRole('button', { name: 'Log Time' }));
+
+        // The old 'coding' key is dropped so its run simply extends.
+        expect(window.localStorage.getItem(`${baseMinute - 30}`)).toBeNull();
+        expect(window.localStorage.getItem(`${baseMinute - 15}`)).toBe(
+            'CODING',
+        );
+        expect(window.localStorage.getItem(`${baseMinute}`)).toBe('email');
+
+        const rows = getRows(getSummaryTable());
+        expect(rows).toHaveLength(3);
+        expect(within(rows[1]).getAllByRole('cell')[1]).toHaveTextContent(
+            '45 min',
+        );
+    });
+
+    it('stores the raw string as one entry when the span is too short', async () => {
+        const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime });
+        seedEntries([{ minutesAgo: 2, value: 'standup' }]);
+        render(App);
+
+        await user.type(
+            screen.getByLabelText(/Activity/),
+            'email, code, review',
+        );
+        await user.click(screen.getByRole('button', { name: 'Log Time' }));
+
+        expect(window.localStorage.getItem(`${baseMinute}`)).toBe(
+            'email, code, review',
+        );
+        expect(getRows(getSummaryTable())).toHaveLength(2);
+    });
+
+    it('stores the raw string as one entry when there is no previous entry', async () => {
+        const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime });
+        render(App);
+
+        await user.type(
+            screen.getByLabelText(/Activity/),
+            'email, code, review',
+        );
+        await user.click(screen.getByRole('button', { name: 'Log Time' }));
+
+        expect(window.localStorage.getItem(`${baseMinute}`)).toBe(
+            'email, code, review',
+        );
+        expect(getRows(getSummaryTable())).toHaveLength(1);
+    });
+
+    it('keeps the submit button disabled for a comma-only input', async () => {
+        const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime });
+        render(App);
+
+        await user.type(screen.getByLabelText(/Activity/), ', ,');
+        expect(screen.getByRole('button', { name: 'Log Time' })).toBeDisabled();
+    });
+
+    it('repeats a comma-containing value verbatim via Ibid', async () => {
+        const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime });
+        seedEntries([{ minutesAgo: 10, value: 'email, code, review' }]);
+        render(App);
+
+        await user.click(
+            screen.getByRole('button', { name: /Repeat last activity/ }),
+        );
+
+        expect(window.localStorage.getItem(`${baseMinute - 10}`)).toBeNull();
+        expect(window.localStorage.getItem(`${baseMinute}`)).toBe(
+            'email, code, review',
+        );
+        expect(getRows(getSummaryTable())).toHaveLength(1);
+    });
+});
+
 describe('App – new day reset', () => {
     it('clears all activities', async () => {
         const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime });

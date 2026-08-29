@@ -5,6 +5,8 @@
         formatLogTimeCell,
         minuteKeyFromTimestamp,
         normalizeActivity,
+        splitActivityList,
+        splitSpanKeys,
         toSortedEntries,
     } from "./lib/time";
     import {
@@ -23,6 +25,7 @@
     let activityInput: HTMLInputElement | null = $state(null);
 
     const entries = $derived(toSortedEntries(currentData));
+    const hasSubmittableValue = $derived(splitActivityList(value).length > 0);
     const latest = $derived(entries[entries.length - 1]);
     const previous = $derived(entries[entries.length - 2]);
 
@@ -34,24 +37,64 @@
         toast.push("Cleared yesterday's activities!");
     };
 
-    const submitActivity = (activityValue: string): boolean => {
+    // A comma-separated submit is spread evenly over the span since the
+    // previous entry: each activity gets its own key ending its own slice.
+    // Consecutive duplicates keep their combined share of the span rather
+    // than producing back-to-back identical rows, so only the last key of
+    // each run is written.
+    const planSplitEntries = (
+        activities: string[],
+        keys: number[],
+    ): Array<{ key: string; activity: string }> =>
+        activities
+            .map((activity, i) => ({ key: `${keys[i]}`, activity }))
+            .filter(
+                (entry, i) =>
+                    i === activities.length - 1 ||
+                    normalizeActivity(activities[i + 1]) !==
+                        normalizeActivity(entry.activity),
+            );
+
+    const submitActivity = (
+        activityValue: string,
+        allowSplit = true,
+    ): boolean => {
         const key = minuteKeyFromTimestamp(Date.now());
         if (window.localStorage.getItem(key) != null) {
             toast.push("Cannot update twice per-minute.");
             return false;
         }
-        if (!activityValue.trim()) {
+        const activities = allowSplit ? splitActivityList(activityValue) : [];
+        if (!activityValue.trim() || (allowSplit && activities.length === 0)) {
             toast.push("Activity cannot be empty.");
             return false;
         }
+        // Null whenever there is nothing to split, no previous entry to
+        // measure the span from, or too few minutes to go around: the raw
+        // input is then stored as a single entry, exactly as before.
+        const keys =
+            activities.length > 1 && latest != null
+                ? splitSpanKeys(
+                      Number(latest.key),
+                      Number(key),
+                      activities.length,
+                  )
+                : null;
+        const planned =
+            keys == null
+                ? [{ key, activity: activityValue }]
+                : planSplitEntries(activities, keys);
+
         if (
             latest != null &&
             normalizeActivity(latest.value as string) ===
-                normalizeActivity(activityValue)
+                normalizeActivity(planned[0].activity)
         ) {
             window.localStorage.removeItem(latest.key);
         }
-        window.localStorage.setItem(key, activityValue);
+        for (const entry of planned) {
+            window.localStorage.setItem(entry.key, entry.activity);
+        }
         refresh();
         return true;
     };
@@ -61,9 +104,11 @@
         if (submitActivity(value)) value = "";
     };
 
+    // Ibid repeats the latest activity verbatim; a stored value that still
+    // contains commas (a submit too short to split) must not split now.
     const handleIbidClick = () => {
         if (latest == null) return;
-        submitActivity(latest.value as string);
+        submitActivity(latest.value as string, false);
     };
 
     const handleGoToInputClick = () => activityInput?.focus();
@@ -102,6 +147,7 @@
                 bind:this={activityInput}
                 name="Activity"
                 id="activity"
+                placeholder="coffee, email, standup"
                 onfocus={handleActivityFocus}
                 onblur={handleActivityBlur}
             />
@@ -115,7 +161,11 @@
                     onclick={handleIbidClick}
                 />
             {/if}
-            <input type="submit" disabled={!value.trim()} value="Log Time" />
+            <input
+                type="submit"
+                disabled={!hasSubmittableValue}
+                value="Log Time"
+            />
         </div>
     </form>
 </div>

@@ -5,6 +5,8 @@ import {
     formatLogTimeCell,
     minuteKeyFromTimestamp,
     normalizeActivity,
+    splitActivityList,
+    splitSpanKeys,
     toSortedEntries,
 } from '../src/lib/time';
 
@@ -143,5 +145,71 @@ describe('normalizeActivity', () => {
 
     it('treats visually identical strings as equal', () => {
         expect(normalizeActivity('EMAIL')).toBe(normalizeActivity(' email '));
+    });
+});
+
+describe('splitActivityList', () => {
+    it('returns a single item when there is no comma', () => {
+        expect(splitActivityList('writing code')).toEqual(['writing code']);
+    });
+
+    it('splits on commas and trims each item', () => {
+        expect(splitActivityList('email,  code , review')).toEqual([
+            'email',
+            'code',
+            'review',
+        ]);
+    });
+
+    it('drops blank segments from trailing and doubled commas', () => {
+        expect(splitActivityList('email, code,')).toEqual(['email', 'code']);
+        expect(splitActivityList('email,, code')).toEqual(['email', 'code']);
+    });
+
+    it('returns an empty array when nothing survives trimming', () => {
+        expect(splitActivityList('')).toEqual([]);
+        expect(splitActivityList('   ')).toEqual([]);
+        expect(splitActivityList(',,,')).toEqual([]);
+    });
+
+    it('handles null and undefined safely', () => {
+        expect(splitActivityList(null)).toEqual([]);
+        expect(splitActivityList(undefined)).toEqual([]);
+    });
+});
+
+describe('splitSpanKeys', () => {
+    it('divides the span evenly and ends on the submitted minute', () => {
+        expect(splitSpanKeys(100, 130, 3)).toEqual([110, 120, 130]);
+    });
+
+    it('spreads a remainder across the slices', () => {
+        expect(splitSpanKeys(100, 110, 3)).toEqual([103, 107, 110]);
+    });
+
+    it('gives every activity a whole minute when the span is exactly the count', () => {
+        expect(splitSpanKeys(100, 103, 3)).toEqual([101, 102, 103]);
+    });
+
+    it('returns strictly increasing keys', () => {
+        const keys = splitSpanKeys(0, 17, 7) as number[];
+        expect(keys).toHaveLength(7);
+        for (let i = 1; i < keys.length; i++) {
+            expect(keys[i]).toBeGreaterThan(keys[i - 1]);
+        }
+    });
+
+    it('returns null when the span cannot give each activity a minute', () => {
+        expect(splitSpanKeys(100, 102, 3)).toBeNull();
+        expect(splitSpanKeys(100, 100, 2)).toBeNull();
+        expect(splitSpanKeys(100, 90, 2)).toBeNull();
+    });
+
+    it('returns the end key alone for a single activity', () => {
+        expect(splitSpanKeys(100, 130, 1)).toEqual([130]);
+    });
+
+    it('returns null for a count below one', () => {
+        expect(splitSpanKeys(100, 130, 0)).toBeNull();
     });
 });
